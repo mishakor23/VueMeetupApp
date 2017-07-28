@@ -33,14 +33,10 @@
 
 <script>
 export default {
-  data() {
-    return {
-      meetups: [
-        { imageUrl: 'https://static.tonkosti.ru/tonkosti/table_img/s20/c4c4/99959938.jpg', id: 'ghsdfuygsd234', title: 'Super Meetup' },
-        { imageUrl: 'http://web.kpi.kharkov.ua/kgm/wp-content/uploads/sites/116/2015/11/slide_6.jpg', id: 'ghsdfuywewgsd234', title: 'Super puper Meetup' },
-        { imageUrl: 'http://yodsportclub.com/wp-content/uploads/2016/09/%D0%A1%D0%B0%D0%B9%D1%82.jpg', id: 'g56gewgsd234', title: 'The Best Meetup' },
-      ],
-    };
+  computed: {
+    meetups() {
+      return this.$store.getters.featuredMeetups;
+    },
   },
   methods: {
     onLoadMeetup(id) {
