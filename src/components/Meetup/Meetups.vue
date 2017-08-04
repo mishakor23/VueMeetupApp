@@ -14,7 +14,7 @@
               <v-flex xs7 sm8 md9>
                 <v-card-title primary-title>
                   <div class="">
-                    <h5 class="white--text mb-0">AbraCadabra</h5>
+                    <h5 class="white--text mb-0">{{ meetup.title}}</h5>
                     <div>{{ meetup.date }}</div>
                   </div>
                 </v-card-title>
