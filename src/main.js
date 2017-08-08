@@ -1,3 +1,4 @@
+import * as firebase from 'firebase';
 import Vue from 'vue';
 import Vuetify from 'vuetify';
 import App from './App';
@@ -16,4 +17,13 @@ new Vue({
   router,
   store,
   render: h => h(App),
+  created() {
+    firebase.initializApp({
+      apiKey: 'AIzaSyCkyiTt1_7ylufNn0eqFXPdGwb4QVIfdAk',
+      authDomain: 'meetups-449f1.firebaseapp.com',
+      databaseURL: 'https://meetups-449f1.firebaseio.com',
+      projectId: 'meetups-449f1',
+      storageBucket: 'meetups-449f1.appspot.com',
+    });
+  },
 });
