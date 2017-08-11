@@ -5,7 +5,7 @@
         <v-card>
           <v-card-text>
             <v-container>
-              <form>
+              <form @submit.prevent="onSignup">
                 <v-layout row>
                   <v-flex xs12>
                     <v-text-field
@@ -69,10 +69,23 @@ export default {
     comparePasswords() {
       return this.password !== this.confirmPassword ? 'Passwords are not equals' : '';
     },
+    user() {
+      return this.$store.getters.user;
+    },
+  },
+  watch: {
+    user(value) {
+      if (value !== null && value !== undefined) {
+        this.$router.push('/');
+      }
+    },
   },
   methods: {
     onSignup() {
-      console.log(this.email, this.password, this.confirmPassword);
+      this.$store.dispatch('signUserUp', {
+        email: this.email,
+        password: this.password,
+      });
     },
   },
 };

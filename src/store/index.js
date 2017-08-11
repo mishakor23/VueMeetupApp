@@ -1,4 +1,7 @@
 /* eslint arrow-body-style: [2, "always"] */
+/* eslint no-param-reassign: ["error", { "props": false }]*/
+
+import * as firebase from 'firebase';
 import Vue from 'vue';
 import Vuex from 'vuex';
 
@@ -29,14 +32,14 @@ const store = new Vuex.Store({
         description: 'Facere placeat necessitatibus quisquam eos iusto ut asperiores.',
       },
     ],
-    user: {
-      id: 'dsfgsdfgs23423',
-      registeredMeetups: ['ghsdfuygsd234'],
-    },
+    user: null,
   },
   mutations: {
     createMeetup(state, payload) {
       state.loadedMeetups.push(payload);
+    },
+    setUser(state, payload) {
+      state.user = payload;
     },
   },
   actions: {
@@ -50,6 +53,33 @@ const store = new Vuex.Store({
         id: 'asdfasdfasdf234',
       };
       commit('createMeetup', meetup);
+    },
+    signUserUp({ commit }, payload) {
+      firebase.auth()
+        .createUserWithEmailAndPassword(payload.email, payload.password)
+          .then((user) => {
+            const newUser = {
+              id: user.uid,
+              registeredMeetups: [],
+            };
+            commit('setUser', newUser);
+          })
+          .catch((error) => {
+            throw (error);
+          });
+    },
+    signUserIn({ commit }, payload) {
+      firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
+        .then((user) => {
+          const newUser = {
+            id: user.id,
+            registeredMeetups: [],
+          };
+          commit('setUser', newUser);
+        })
+        .catch((error) => {
+          throw (error);
+        });
     },
   },
   getters: {
@@ -67,6 +97,9 @@ const store = new Vuex.Store({
           return meetup.id === meetupId;
         });
       };
+    },
+    user(state) {
+      return state.user;
     },
   },
 });
