@@ -11,29 +11,31 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
   state: {
-    loadedMeetups: [
-      { imageUrl: 'https://static.tonkosti.ru/tonkosti/table_img/s20/c4c4/99959938.jpg',
-        location: 'Kharkiv',
-        date: new Date(),
-        id: 'ghsdfuygsd234',
-        title: 'Super Meetup',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit.',
-      },
-      { imageUrl: 'http://web.kpi.kharkov.ua/kgm/wp-content/uploads/sites/116/2015/11/slide_6.jpg',
-        location: 'Kiev',
-        date: new Date(),
-        id: 'ghsdfuywewgsd234',
-        title: 'Super puper Meetup',
-        description: 'Temporibus et, itaque deleniti quam tenetur voluptatibus, error, modi ipsa libero nulla nobis dolor.',
-      },
-      { imageUrl: 'http://yodsportclub.com/wp-content/uploads/2016/09/%D0%A1%D0%B0%D0%B9%D1%82.jpg',
-        location: 'Dnepr',
-        date: new Date(),
-        id: 'g56gewgsd234',
-        title: 'The Best Meetup',
-        description: 'Facere placeat necessitatibus quisquam eos iusto ut asperiores.',
-      },
-    ],
+    loadedMeetups: null,
+    // [
+    //   { imageUrl: 'https://static.tonkosti.ru/tonkosti/table_img/s20/c4c4/99959938.jpg',
+    //     location: 'Kharkiv',
+    //     date: new Date(),
+    //     id: 'ghsdfuygsd234',
+    //     title: 'Super Meetup',
+    //     description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit.',
+    //   },
+    //   { imageUrl: 'http://web.kpi.kharkov.ua/kgm/wp-content/uploads/sites/116/2015/11/slide_6.jpg',
+    //     location: 'Kiev',
+    //     date: new Date(),
+    //     id: 'ghsdfuywewgsd234',
+    //     title: 'Super puper Meetup',
+    //     description: 'Temporibus et, itaque deleniti quam tenetur voluptatibus,
+    //     error, modi ipsa libero nulla nobis dolor.',
+    //   },
+    //   { imageUrl: 'http://yodsportclub.com/wp-content/uploads/2016/09/%D0%A1%D0%B0%D0%B9%D1%82.jpg',
+    //     location: 'Dnepr',
+    //     date: new Date(),
+    //     id: 'g56gewgsd234',
+    //     title: 'The Best Meetup',
+    //     description: 'Facere placeat necessitatibus quisquam eos iusto ut asperiores.',
+    //   },
+    // ],
     user: null,
     loading: false,
     error: null,
@@ -81,29 +83,43 @@ const store = new Vuex.Store({
           }
         })
         .catch((error) => {
-          console.log(error);
           commit('setLoading', false);
+          throw (error);
         });
     },
     createMeetup({ commit, getters }, payload) {
       const meetup = {
         title: payload.title,
         location: payload.location,
-        imageUrl: payload.imageUrl,
         description: payload.description,
         date: payload.date.toISOString(),
         creatorId: getters.user.id,
       };
+      let imageUrl;
+      let key;
       firebase.database().ref('meetups').push(meetup)
         .then((data) => {
-          const key = data.key;
+          key = data.key;
+          return key;
+        })
+        .then((meetupKey) => {
+          const filename = payload.image.name;
+          const ext = filename.slice(filename.lastIndexOf('.'));
+          return firebase.storage().ref(`meetups/${meetupKey}${ext}`).put(payload.image);
+        })
+        .then((fileData) => {
+          imageUrl = fileData.metadata.downloadURLs[0];
+          return firebase.database().ref('meetups').child(key).update({ imageUrl });
+        })
+        .then(() => {
           commit('createMeetup', {
             ...meetup,
+            imageUrl,
             id: key,
           });
         })
         .catch((error) => {
-          console.log(error);
+          throw (error);
         });
     },
     signUserUp({ commit }, payload) {
