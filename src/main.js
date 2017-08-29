@@ -6,12 +6,14 @@ import router from './router';
 import store from './store';
 import DateFilter from './filters/date';
 import AlertComponent from './components/Shared/Alert';
+import EditMeetupDialog from './components/Meetup/Edit/EditMeetupDialog';
 
 Vue.use(Vuetify);
 Vue.config.productionTip = false;
 
 Vue.filter('date', DateFilter);
 Vue.component('app-alert', AlertComponent);
+Vue.component('app-edit-meetup-dialog', EditMeetupDialog);
 
 /* eslint-disable no-new */
 new Vue({
