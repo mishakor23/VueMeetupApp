@@ -51,7 +51,7 @@
               <v-text-field
                 name="description"
                 label="Description"
-                id="idescription"
+                id="description"
                 v-model="description"
                 multi-line
                 required>
